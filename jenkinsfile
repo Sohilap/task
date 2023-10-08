@@ -20,7 +20,7 @@ pipeline {
                     sh "sudo docker build -t tree:new ."
 
                     // Log in to Docker Hub using the pre-added credentials
-                    docker.withRegistry('https://registry.hub.docker.com', '4c0e2a42-f356-45d5-8376-96989f549691') {
+                    docker.withRegistry('https://registry.hub.docker.com','4c0e2a42-f356-45d5-8376-96989f549691') {
                         // Push the Docker image to Docker Hub
                         sh "sudo docker push tree:new"
                     }
