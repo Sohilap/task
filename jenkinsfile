@@ -17,12 +17,12 @@ pipeline {
                        stage('Push to Docker Hub') {
             steps {
                 script {
-                    withCredentials([usernamePassword(credentialsId: 'Docker', passwordVariable: 'DOCKERHUB_PASSWORD', usernameVariable: 'DOCKERHUB_USERNAME')]) {
+                    withCredentials([usernamePassword(credentialsId: '4c0e2a42-f356-45d5-8376-96989f549691', passwordVariable: 'DOCKERHUB_PASSWORD', usernameVariable: 'DOCKERHUB_USERNAME')]) {
                         // Login to Docker Hub
                          sh "docker login -u $DOCKERHUB_USERNAME -p $DOCKERHUB_PASSWORD"
 
                         // Push the Docker image to Docker Hub
-                        sh 'docker push prathikm/docker'
+                        sh 'docker push sohilpa/tree'
                     }
                 }
             }
