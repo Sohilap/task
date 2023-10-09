@@ -12,7 +12,7 @@ pipeline {
             steps {
                 script {
                     // Build the Docker image
-                    sh 'docker build -t job .'
+                    sh 'docker build -t sohilap/job .'
 
                        stage('Push to Docker Hub') {
             steps {
