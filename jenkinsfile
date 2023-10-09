@@ -17,13 +17,13 @@ pipeline {
             steps {
                 script {
                     // Build the Docker image
-                    sh "docker build -t sohilap/tree:new ."
+                    sh "docker build -t sohilap/tree ."
 
                     // Log in to Docker Hub using the pre-added credentials
                     docker.withRegistry('https://registry.hub.docker.com','4c0e2a42-f356-45d5-8376-96989f549691') {
                         
                       // Push the Docker image to Docker Hub
-                        sh "docker push sohilap/tree:new"
+                        sh "docker push sohilap/tree"
                     }
                 }
             }
