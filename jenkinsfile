@@ -15,7 +15,6 @@ pipeline {
                     sh 'docker build -t sohilap/job .'
 
                        stage('Push to Docker Hub') {
-            steps {
                 script {
                     withCredentials([usernamePassword(credentialsId: '4c0e2a42-f356-45d5-8376-96989f549691', passwordVariable: 'DOCKERHUB_PASSWORD', usernameVariable: 'DOCKERHUB_USERNAME')]) {
                         // Login to Docker Hub
@@ -23,7 +22,6 @@ pipeline {
 
                         // Push the Docker image to Docker Hub
                         sh 'docker push sohilpa/job'
-                    }
                 }
             }
         }
