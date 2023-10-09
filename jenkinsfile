@@ -14,8 +14,9 @@ pipeline {
                     // Build the Docker image
                     sh 'docker build -t job .'
 
-                    // Log in to Docker Hub using the pre-added credentials
-                    docker.withRegistry('https://registry.hub.docker.com','4c0e2a42-f356-45d5-8376-96989f549691') {
+                     withCredentials([usernamePassword(credentialsId: '4c0e2a42-f356-45d5-8376-96989f549691', passwordVariable: 'DOCKERHUB_PASSWORD', usernameVariable: 'DOCKERHUB_USERNAME')]) {
+                        // Login to Docker Hub
+                         sh "docker login -u $DOCKERHUB_USERNAME -p $DOCKERHUB_PASSWORD"{
                         
                       sh 'docker tag job sohilap/job'
 
