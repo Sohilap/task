@@ -8,7 +8,7 @@ pipeline {
             }
         }
 
-        stage('Build and Push Docker Image') {
+        stage('Build Docker Image and Push to Docker Hub') {
             steps {
                 script {
                     // Build the Docker image
