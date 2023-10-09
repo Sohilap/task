@@ -1,11 +1,6 @@
 pipeline {
     agent any
     
-    environment {
-        DOCKER_IMAGE_NAME = 'sohilap/tree'
-        DOCKER_IMAGE_TAG = 'new'
-    }
-
     stages {
         stage('Checkout') {
             steps {
