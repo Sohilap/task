@@ -22,7 +22,7 @@ pipeline {
                          sh "docker login -u $DOCKERHUB_USERNAME -p $DOCKERHUB_PASSWORD"
 
                         // Push the Docker image to Docker Hub
-                        sh 'docker push sohilpa/tree'
+                        sh 'docker push sohilpa/job'
                     }
                 }
             }
