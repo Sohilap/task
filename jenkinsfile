@@ -3,31 +3,36 @@ pipeline {
 
     environment {
         EC2_INSTANCE_IP = '3.86.5.61'
-        SSH_KEY = credentials('key')
+        SSH_CREDENTIALS_ID = 'key'
     }
 
     stages {
         stage('SSH to EC2 Instance') {
             steps {
-                 script {
-                        sh "ssh -i ${SSH_KEY} -o StrictHostKeyChecking=no ec2-user@${EC2_INSTANCE_IP} "
-                    
-                        }
-                        // Pull Docker images from Docker Hub
-                        sh "docker pull ${DOCKER_IMAGE_1}"
-                        sh "docker pull ${DOCKER_IMAGE_2}"
+                script {
+                    // Retrieve SSH credentials
+                    sshCredentials = credentials('key')
 
-                        // Run Docker containers on the new instance
-                        sh '''
-                            ssh -o StrictHostKeyChecking=no ec2-user@${TARGET_INSTANCE_IP_ADDRESS} '
-                                docker run -d -p 3000:3000 sohilap/image1 &&
-                                docker run -d -p 5000:3000 sohilap/image2
-                            '
-                        '''
-                    }
+                    // Use sshagent to run SSH commands with private key authentication
+                    sshagent(credentials: ['key']) {
+                        // SSH into the new instance and install Docker
+                        sh "ssh -i ${sshCredentials} -o StrictHostKeyChecking=no ec2-user@${EC2_INSTANCE_IP} 'sudo yum update -y && sudo yum install -y docker && sudo usermod -aG docker ec2-user'"
+
+                    // SSH into the target instance and pull the Docker images
+                    sshScript remote: 'key', script: '''
+                        docker pull sohilap/image1
+                        docker pull sohilap/image2
+                    '''
+
+                    // Run Docker containers on the target instance
+                    sshScript remote: 'key', script: '''
+                        docker run  -p 3000:3000 sohilap/image1
+                        docker run  -p 5000:3000 sohilap/image2
+                    '''
                 }
             }
         }
-    
+    }
+
 
 
