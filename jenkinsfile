@@ -3,32 +3,36 @@ pipeline {
 
     environment {
         TARGET_INSTANCE_SSH_CREDENTIALS = credentials('key')
+        SSH_PRIVATE_KEY = credentials('key')
     }
-stages{
+
+    stages {
         stage('Deploy to New Instance') {
             steps {
                 script {
+                    // Retrieve SSH private key
+                    sshPrivateKey = credentials('your-ssh-private-key-id')
+
                     // SSH into the target instance and install Docker
                     sshScript remote: 'key', script: '''
-                      sudo yum update -y
-                      sudo yum install -y docker
-                      sudo usermod -aG docker ec2-user  
-                    '''
+                        sudo yum update -y
+                        sudo yum install -y docker
+                        sudo usermod -aG docker ec2-user
+                    ''', keyFile: sshPrivateKey
 
                     // SSH into the target instance and pull the Docker images
                     sshScript remote: 'key', script: '''
                         docker pull sohilap/image1
                         docker pull sohilap/image2
-                    '''
+                    ''', keyFile: sshPrivateKey
 
                     // Run Docker containers on the target instance
                     sshScript remote: 'key', script: '''
-                        docker run  -p 3000:3000 sohilap/image1
-                        docker run  -p 5000:3000 sohilap/image2
-                    '''
+                        docker run -p 3000:3000 sohilap/image1
+                        docker run -p 5000:3000 sohilap/image2
+                    ''', keyFile: sshPrivateKey
                 }
             }
         }
     }
 }
-
