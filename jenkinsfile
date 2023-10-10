@@ -9,10 +9,10 @@ pipeline {
     stages {
         stage('SSH to EC2 Instance') {
             steps {
-                
+                 script {
                         sh "ssh -i ${SSH_KEY} -o StrictHostKeyChecking=no ec2-user@${EC2_INSTANCE_IP} "
-                    }
-
+                    
+                        }
                         // Pull Docker images from Docker Hub
                         sh "docker pull ${DOCKER_IMAGE_1}"
                         sh "docker pull ${DOCKER_IMAGE_2}"
@@ -27,7 +27,7 @@ pipeline {
                     }
                 }
             }
-        
+        }
     
 
 
