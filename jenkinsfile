@@ -9,8 +9,7 @@ pipeline {
     stages {
         stage('SSH to EC2 Instance') {
             steps {
-                script {
-                    sshagent(credentials: [key]) {
+                
                         sh "ssh -i ${SSH_KEY} -o StrictHostKeyChecking=no ec2-user@${EC2_INSTANCE_IP} "
                     }
 
@@ -29,6 +28,6 @@ pipeline {
                 }
             }
         }
-    }
+    
 
 
