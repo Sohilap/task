@@ -5,34 +5,31 @@ pipeline {
         TARGET_INSTANCE_SSH_CREDENTIALS = credentials('key')
         DOCKER_IMAGE_1 = "sohilap/image1"
         DOCKER_IMAGE_2 = "sohilap/image2"
+        TARGET_INSTANCE_IP_ADDRESS = '172.31.32.176' // Replace with your actual target instance IP
     }
 
     stages {
         stage('Deploy to New Instance') {
             steps {
                 script {
-                    // Retrieve SSH credentials
-                    sshCredentials = credentials('key')
-
                     // Use sshagent to run SSH commands with private key authentication
                     sshagent(credentials: ['key']) {
                         // SSH into the new instance and install Docker
                         sh '''
-                            ssh -i ${SSH_KEY} -o StrictHostKeyChecking=no ec2-user@172.31.32.176 '
-                            sudo yum update -y
-                            sudo yum install -y docker
-                            sudo usermod -aG docker ec2-user
+                            ssh -o StrictHostKeyChecking=no ec2-user@${TARGET_INSTANCE_IP_ADDRESS} '
+                                sudo yum update -y
+                                sudo yum install -y docker
+                                sudo usermod -aG docker ec2-user
                             '
                         '''
 
                         // Pull Docker images from Docker Hub
-                       sh docker pull sohilap/image1
-                       sh docker pull sohilap/image2
-                        }
+                        sh "docker pull ${DOCKER_IMAGE_1}"
+                        sh "docker pull ${DOCKER_IMAGE_2}"
 
                         // Run Docker containers on the new instance
                         sh '''
-                            ssh -o "StrictHostKeyChecking=no" -i ${sshCredentials.username}@${TARGET_INSTANCE_IP_ADDRESS} '
+                            ssh -o StrictHostKeyChecking=no ec2-user@${TARGET_INSTANCE_IP_ADDRESS} '
                                 docker run -d -p 3000:3000 sohilap/image1 &&
                                 docker run -d -p 5000:3000 sohilap/image2
                             '
@@ -42,3 +39,5 @@ pipeline {
             }
         }
     }
+}
+
