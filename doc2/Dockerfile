@@ -3,10 +3,10 @@ FROM node:20-alpine
 WORKDIR /sohila/app/
 
 COPY package.json .
-COPY hello.js .
+COPY sohila.js .
 
 RUN npm install
 
 EXPOSE 3000
 
-ENTRYPOINT ["node", "helloworld.js"]
+ENTRYPOINT ["node", "sohila.js"]

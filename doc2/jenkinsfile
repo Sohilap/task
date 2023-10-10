@@ -1,0 +1,32 @@
+pipeline {
+    agent any
+    
+    stages {
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
+        }
+
+        stage('Build Docker Image') {
+            steps {
+                script {
+                    // Build the Docker image
+                    sh 'docker build -t sohilap/image2 .'
+
+                       stage('Push to Docker Hub') {
+                script {
+                    withCredentials([usernamePassword(credentialsId: '4c0e2a42-f356-45d5-8376-96989f549691', passwordVariable: 'DOCKERHUB_PASSWORD', usernameVariable: 'DOCKERHUB_USERNAME')]) {
+                        // Login to Docker Hub
+                         sh "docker login -u $DOCKERHUB_USERNAME -p $DOCKERHUB_PASSWORD"
+
+                        // Push the Docker image to Docker Hub
+                        sh 'docker push sohilap/image2'
+                }
+            }
+        }
+                    }
+                }
+            }
+        }
+    }
