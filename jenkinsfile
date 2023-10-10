@@ -1,50 +1,30 @@
-
-                     pipeline {
+pipeline {
     agent any
 
     environment {
-        EC2_INSTANCE_IP = '3.86.5.61'
-        SSH_CREDENTIALS_ID = 'key'
+        DOCKER_IMAGE = 'sumanth1206/sumanth' // Replace with your Docker image and tag
+        EC2_INSTANCE = '18.207.164.180' // Replace with your EC2 instance IP or DNS
+        SSH_KEY = credentials('sshuser') // Replace with your Jenkins SSH credentials ID
     }
 
-    stages {
-        stage('SSH to EC2 Instance') {
+    stage('Deploy to EC2') {
             steps {
                 script {
-                    // Retrieve SSH credentials
-                    sshCredentials = credentials('key')
-
-                    // Use sshagent to run SSH commands with private key authentication
-                    sshagent(credentials: ['key']) {
-                        // SSH into the new instance and install Docker
-                        sh """
-                            ssh -i ${sshCredentials} -o StrictHostKeyChecking=no ec2-user@${EC2_INSTANCE_IP} \
-                            'sudo yum update -y && sudo yum install -y docker && sudo usermod -aG docker ec2-user'
-                        """
-                    }
-                }
-            }
-        }
-
-        stage('Pull and Run Docker Images') {
-            steps {
-                script {
-                    // SSH into the target instance and pull the Docker images
-                    sh '''
-                        docker pull sohilap/image1
-                        docker pull sohilap/image2
-                    '''
-
-                    // Run Docker containers on the target instance
-                    sh '''
-                        docker run -d -p 3000:3000 sohilap/image1
-                        docker run -d -p 5000:3000 sohilap/image2
-                    '''
+                    // SSH into the EC2 instance and deploy the Docker container
+                    sh """
+                    ssh -i ${SSH_KEY} -o StrictHostKeyChecking=no ec2-user@${EC2_INSTANCE} << EOF
+                    docker pull \${DOCKER_IMAGE}
+                    docker run -d --name sumanth -p 5000:3000 \${DOCKER_IMAGE}
+                    >> EOF
+                 """
                 }
             }
         }
     }
 }
+                   
+                  
+
 
 
 
