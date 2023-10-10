@@ -3,7 +3,7 @@ pipeline {
 
     environment {
         TARGET_INSTANCE_SSH_CREDENTIALS = credentials('key')
-        TARGET_INSTANCE_IP_ADDRESS = '3.86.5.61'
+        TARGET_INSTANCE_IP_ADDRESS = '172.31.32.176'
         DOCKER_IMAGE_1 = "sohilap/image1"
         DOCKER_IMAGE_2 = "sohilap/image2"
     }
