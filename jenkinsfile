@@ -3,34 +3,41 @@ pipeline {
 
     environment {
         TARGET_INSTANCE_SSH_CREDENTIALS = credentials('key')
-        SSH_PRIVATE_KEY = credentials('key')
+        DOCKER_IMAGE_1 = "sohilap/image1"
+        DOCKER_IMAGE_2 = "sohilap/image2"
     }
 
     stages {
         stage('Deploy to New Instance') {
             steps {
                 script {
-                    // Retrieve SSH private key
-                    sshPrivateKey = credentials('your-ssh-private-key-id')
+                    // Retrieve SSH credentials
+                    sshCredentials = credentials('key')
 
-                    // SSH into the target instance and install Docker
-                    sshScript remote: 'key', script: '''
-                        sudo yum update -y
-                        sudo yum install -y docker
-                        sudo usermod -aG docker ec2-user
-                    ''', keyFile: sshPrivateKey
+                    // Use sshagent to run SSH commands with private key authentication
+                    sshagent(credentials: ['key']) {
+                        // SSH into the new instance and install Docker
+                        sh '''
+                            ssh -o "StrictHostKeyChecking=no" ${sshCredentials.username}@${TARGET_INSTANCE_IP_ADDRESS} '
+                            sudo yum update -y
+                            sudo yum install -y docker
+                            sudo usermod -aG docker ec2-user
+                            '
+                        '''
 
-                    // SSH into the target instance and pull the Docker images
-                    sshScript remote: 'key', script: '''
-                        docker pull sohilap/image1
-                        docker pull sohilap/image2
-                    ''', keyFile: sshPrivateKey
+                        // Pull Docker images from Docker Hub
+                       sh docker pull sohilap/image1
+                       sh docker pull sohilap/image2
+                        }
 
-                    // Run Docker containers on the target instance
-                    sshScript remote: 'key', script: '''
-                        docker run -p 3000:3000 sohilap/image1
-                        docker run -p 5000:3000 sohilap/image2
-                    ''', keyFile: sshPrivateKey
+                        // Run Docker containers on the new instance
+                        sh '''
+                            ssh -o "StrictHostKeyChecking=no" ${sshCredentials.username}@${TARGET_INSTANCE_IP_ADDRESS} '
+                                docker run -d -p 3000:3000 sohilap/image1 &&
+                                docker run -d -p 5000:3000 sohilap/image2
+                            '
+                        '''
+                    }
                 }
             }
         }
