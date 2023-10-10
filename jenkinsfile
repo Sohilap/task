@@ -3,7 +3,7 @@ pipeline {
 
     environment {
         EC2_INSTANCE_IP = '3.86.5.61'
-        SSH_CREDENTIALS_ID = 'key'
+        SSH_KEY = credentials('key')
     }
 
     stages {
@@ -11,7 +11,7 @@ pipeline {
             steps {
                 script {
                     sshagent(credentials: [key]) {
-                        sh "ssh -o StrictHostKeyChecking=no ec2-user@${EC2_INSTANCE_IP} "
+                        sh "ssh -i ${SSH_KEY} -o StrictHostKeyChecking=no ec2-user@${EC2_INSTANCE_IP} "
                     }
 
                         // Pull Docker images from Docker Hub
