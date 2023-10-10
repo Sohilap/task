@@ -2,7 +2,6 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_HUB_CREDENTIALS = credentials('4c0e2a42-f356-45d5-8376-96989f549691')
         TARGET_INSTANCE_SSH_CREDENTIALS = credentials('key')
     }
 stages{
