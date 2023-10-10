@@ -18,7 +18,7 @@ pipeline {
                     sshagent(credentials: ['key']) {
                         // SSH into the new instance and install Docker
                         sh '''
-                            ssh -o "StrictHostKeyChecking=no" -i ${sshCredentials.username}@${TARGET_INSTANCE_IP_ADDRE} '
+                            ssh -o StrictHostKeyChecking=no -i ${SSH_PRIVATE_KEY} ${TARGET_INSTANCE_SSH_CREDENTIALS.username}@${TARGET_INSTANCE_IP_ADDRESS}  '
                             sudo yum update -y
                             sudo yum install -y docker
                             sudo usermod -aG docker ec2-user
