@@ -2,26 +2,17 @@ pipeline {
     agent any
 
     environment {
-        TARGET_INSTANCE_SSH_CREDENTIALS = credentials('key')
-        DOCKER_IMAGE_1 = "sohilap/image1"
-        DOCKER_IMAGE_2 = "sohilap/image2"
-        TARGET_INSTANCE_IP_ADDRESS = '172.31.32.176' // Replace with your actual target instance IP
+        EC2_INSTANCE_IP = '172.31.32.176'
+        SSH_CREDENTIALS_ID = 'key'
     }
 
     stages {
-        stage('Deploy to New Instance') {
+        stage('SSH to EC2 Instance') {
             steps {
                 script {
-                    // Use sshagent to run SSH commands with private key authentication
-                    sshagent(credentials: ['key']) {
-                        // SSH into the new instance and install Docker
-                        sh '''
-                            ssh -o StrictHostKeyChecking=no -i ~/.ssh/my-ssh-key.pub ec2-user@${TARGET_INSTANCE_IP_ADDRESS} '
-                                sudo yum update -y
-                                sudo yum install -y docker
-                                sudo usermod -aG docker ec2-user
-                            '
-                        '''
+                    sshagent(credentials: [key]) {
+                        sh "ssh -o StrictHostKeyChecking=no ec2-user@${EC2_INSTANCE_IP} "
+                    }
 
                         // Pull Docker images from Docker Hub
                         sh "docker pull ${DOCKER_IMAGE_1}"
@@ -39,5 +30,5 @@ pipeline {
             }
         }
     }
-}
+
 
